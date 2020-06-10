@@ -14,6 +14,27 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<http:listener doc:name="GET /american" doc:id="3117e17c-0bb2-46b1-afc0-0806fba75a4f" config-ref="HTTP_Listener_config" path="/american"/>
 		<flow-ref doc:name="setCode" doc:id="26b7bdc8-ca03-4e1c-8e42-bf73e154f97d" name="setCode"/>
 		<american-flight-api:get-flights doc:name="Get flights" doc:id="fa8be9ca-4606-4e7c-9e70-f1f74ceaf097" config-ref="AmericanFlight_API_Config" client-id="${american.client_id}" client-secret="${american.client_secret}" destination="#[vars.code]"/>
+		<ee:transform doc:name="Transform Message" doc:id="b9049766-d790-43e4-b9a3-51ed56d0d3d9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	plane: {
+		"type": payload01.plane."type",
+		totalSeats: payload01.plane.totalSeats
+	},
+	code: payload01.code,
+	price: payload01.price,
+	origin: payload01.origin,
+	destination: payload01.destination,
+	ID: payload01.ID,
+	departureDate: payload01.departureDate,
+	emptySeats: payload01.emptySeats
+} ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="28bc798c-5875-45b0-8d11-455f95e19ef5" message="#[payload]"/>
 	</flow>
 	<flow name="getUnitedFlight" doc:id="321b8f43-ea89-4169-9da1-029370025887">
 		<http:listener doc:name="GET /united" doc:id="8fa9e7cf-b5db-4757-9585-e19f58af2a8a" config-ref="HTTP_Listener_config" path="/united" allowedMethods="GET" />
@@ -29,7 +50,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<flow name="getDeltaFlight" doc:id="bf213eeb-e43f-446e-9b58-6647145125d5" >
 		<http:listener doc:name="GET /delta" doc:id="7b12f880-9161-489b-aa19-b3ca43a44ff9" config-ref="HTTP_Listener_config" path="/delta"/>
 		<flow-ref doc:name="setCode" doc:id="95b08df8-c696-4d92-a93f-7911ae668587" name="setCode"/>
-		<ee:transform doc:name="Transform Message" doc:id="a0695d44-2caf-4bc2-bb83-a092753b4af6" >
+		<ee:transform doc:name="PassCode" doc:id="a0695d44-2caf-4bc2-bb83-a092753b4af6" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/xml
@@ -43,7 +64,7 @@ ns ns0 http://soap.training.mulesoft.com/
 			</ee:message>
 		</ee:transform>
 		<wsc:consume operation="findFlight" doc:name="getFlight" doc:id="f7c4bdfc-e8d8-4321-a37b-c57a30c66a0d" config-ref="Web_Service_Consumer_Config"/>
-		<ee:transform doc:name="Transform Message" doc:id="0c0abc8e-f882-45d9-82a8-1ad2e374e096" >
+		<ee:transform doc:name="SOAPTOJson" doc:id="0c0abc8e-f882-45d9-82a8-1ad2e374e096" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json

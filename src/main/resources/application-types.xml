@@ -28,9 +28,6 @@ type flight_json = {|
     <types:type name="flights_example" format="xml">
       <types:example format="xml" element="{http://soap.training.mulesoft.com/}listAllFlightsResponse" location="examples/flights-example.xml"/>
     </types:type>
-    <types:type name="Flight_Pojo" format="java">
-      <types:shape format="java" element="com.mulesoft.training.Flight"/>
-    </types:type>
     <types:type name="united_flights_json" format="json">
       <types:shape format="weave" example="examples/united-flights-example.json"><![CDATA[%dw 2.0
 
@@ -40,12 +37,24 @@ type united_flights_json = {|
 
 ]]></types:shape>
     </types:type>
+    <types:type name="Flight_Pojo" format="java">
+      <types:shape format="java" element="com.mulesoft.training.Flight"/>
+    </types:type>
   </types:catalog>
   <types:enrichment select="#8fa9e7cf-b5db-4757-9585-e19f58af2a8a">
     <types:processor-declaration>
       <types:output-event>
         <types:message>
           <types:payload type="united_flights_json"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#b9049766-d790-43e4-b9a3-51ed56d0d3d9">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="Flight_Pojo"/>
         </types:message>
       </types:output-event>
     </types:processor-declaration>
