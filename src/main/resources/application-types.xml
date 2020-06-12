@@ -37,26 +37,48 @@ type united_flights_json = {|
 
 ]]></types:shape>
     </types:type>
-    <types:type name="Flight_Pojo" format="java">
+    <types:type name="flight_xml" format="xml">
+      <types:example format="xml" element="{http://soap.training.mulesoft.com/}listAllFlightsResponse" location="examples/flights-example-1.xml"/>
+    </types:type>
+    <types:type name="flightJava" format="java">
       <types:shape format="java" element="com.mulesoft.training.Flight"/>
     </types:type>
   </types:catalog>
-  <types:enrichment select="#8fa9e7cf-b5db-4757-9585-e19f58af2a8a">
+  <types:enrichment select="#3e3b25d6-4e2f-4005-b769-f3289ad50f13">
     <types:processor-declaration>
       <types:output-event>
         <types:message>
-          <types:payload type="united_flights_json"/>
+          <types:payload type="united_flights_json[]"/>
         </types:message>
       </types:output-event>
     </types:processor-declaration>
   </types:enrichment>
-  <types:enrichment select="#b9049766-d790-43e4-b9a3-51ed56d0d3d9">
+  <types:enrichment select="#ae70580d-734d-45eb-a5a6-f78c168401e2">
     <types:processor-declaration>
       <types:output-event>
         <types:message>
-          <types:payload type="Flight_Pojo"/>
+          <types:payload type="flightJava[]"/>
         </types:message>
       </types:output-event>
     </types:processor-declaration>
   </types:enrichment>
+  <types:enrichment select="#83d1de0d-1a69-493e-a3c0-6cb2f4145262">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="flightJava[]"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#91adbd18-88d4-4219-bead-76ed4627bc3c">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="flightJava[]"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#e7796a3a-fdb6-4846-823c-bd2c7e8bf0e4"/>
 </types:mule>
