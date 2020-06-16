@@ -236,7 +236,7 @@ data: {
 		<ee:transform doc:name="Transform Message" doc:id="9666c5d4-5a9d-4624-90a1-c5b1cb065d5b" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
+output application/dw
 
 //var numSeat = 400
 //var numSeat = (x=400) -> x
@@ -245,6 +245,8 @@ output application/java
 //		150
 //	else
 //		300
+import dasherize from dw::core::Strings
+
 fun getNumSeats(planeType: String) =
 	if (planeType contains('737') )
 			150
@@ -258,16 +260,38 @@ using(flights=
 	
 		destination: object.destination,
 		price: object.price as Number as Currency ,
-		availableSeats: getNumSeats(object.planeType as String),
-		planeType: upper(object.planeType as String),
+//		availableSeats: getNumSeats(object.planeType as String),
+		availableSeats: object.emptySeats as Number,
+		totalSeats: lookup("getTotalSeats",{planeType: object.planeType}),
+		planeType: dasherize(replace(object.planeType as String, /Boing/) with "Boeing"),
 		departureDate: object.departureDate as Date {format: "yyyy/MM/dd"} as String {format: "dd MMM, yyyy"}
 	
-	}	as Flight
+	}	as Object
 ) 
-flights 
+flights
+	distinctBy $
+	filter ($.availableSeats != 0)
+	orderBy $.departureDate
+	orderBy $.price
 ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="01c4093b-424e-4f5f-a0b3-f6ffb6534c68" />
+	</flow>
+	<flow name="getTotalSeats" doc:id="4a970f6f-d447-4bbb-a0c7-ad2c2775734a" >
+		<ee:transform doc:name="Transform Message" doc:id="14278662-da6a-4730-8222-1526dc6608b3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+
+fun getNumSeats(planeType: String) =
+	if (planeType contains('737') )
+			150
+		else
+			300
+---
+getNumSeats(payload.planeType)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</flow>
 </mule>
