@@ -124,15 +124,6 @@ output application/json
 		<flow-ref doc:name="getFlights" doc:id="55c88bd3-4e04-4840-b2e5-ef69b8620ae8" name="getFlights"/>
     </flow>
     <flow name="post:\flights:application\json:mua-flights-api-config">
-        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "Flight added (but not really)"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="postFlight" doc:id="65e0f7ad-8063-4e3d-a16b-60e640631f86" name="postFlight"/>
     </flow>
 </mule>

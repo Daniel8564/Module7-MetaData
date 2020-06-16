@@ -11,6 +11,12 @@
     },
     "b9049766-d790-43e4-b9a3-51ed56d0d3d9": {
       "payload": "sample_data/list_json_2.json"
+    },
+    "76e3dfc0-0099-438e-9ff9-ef153f36780a": {
+      "payload": "sample_data/json.json"
+    },
+    "9666c5d4-5a9d-4624-90a1-c5b1cb065d5b": {
+      "payload": "sample_data/listallflightsresponse.xml"
     }
   }
 }

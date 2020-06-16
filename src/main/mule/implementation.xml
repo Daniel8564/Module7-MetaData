@@ -212,4 +212,62 @@ payload.body.ns0#findFlightResponse.*return map ( return , indexOfReturn ) -> {
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="cd444727-6dd1-4324-aae7-5c4143287b2d" />
 	</flow>
+	<flow name="postFlight" doc:id="d00eb8ba-dbe3-4dae-9433-5e16a69fcd74" >
+		<ee:transform doc:name="Transform Message" doc:id="76e3dfc0-0099-438e-9ff9-ef153f36780a" >
+			<ee:message >
+				<ee:set-payload resource="json_flight_playground.dwl" />
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="DWoutput" ><![CDATA[%dw 2.0
+output application/xml
+---
+data: {
+	hub: "MUA",
+	flight @(airine: payload.airline): {
+		code: payload.toAirportCode
+	}
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="cb7d0e85-d8b2-4238-abe4-d1ec293595e4" message="#[vars.DWoutput]"/>
+	</flow>
+	<flow name="postMultipleFlights" doc:id="ef853de5-4d5b-4942-ac10-26dbaae25954" >
+		<http:listener doc:name="POST /multipleFlights" doc:id="3b683200-82d8-4971-8e86-6dee073d705c" config-ref="HTTP_Listener_config" path="/multipleflights" allowedMethods="POST"/>
+		<ee:transform doc:name="Transform Message" doc:id="9666c5d4-5a9d-4624-90a1-c5b1cb065d5b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+
+//var numSeat = 400
+//var numSeat = (x=400) -> x
+//var numSeat = (planeType: String) -> 
+//	if (planeType contains('737') )
+//		150
+//	else
+//		300
+fun getNumSeats(planeType: String) =
+	if (planeType contains('737') )
+			150
+		else
+			300
+type Currency = String {format: "###.00"}
+type Flight = Object {class: "com.mulesoft.training.Flight"}
+---
+using(flights=
+	 payload..*return map (object, index) -> {
+	
+		destination: object.destination,
+		price: object.price as Number as Currency ,
+		availableSeats: getNumSeats(object.planeType as String),
+		planeType: upper(object.planeType as String),
+		departureDate: object.departureDate as Date {format: "yyyy/MM/dd"} as String {format: "dd MMM, yyyy"}
+	
+	}	as Flight
+) 
+flights 
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="01c4093b-424e-4f5f-a0b3-f6ffb6534c68" />
+	</flow>
 </mule>
